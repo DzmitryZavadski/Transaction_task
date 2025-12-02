@@ -5,18 +5,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class PostgresConfigurationConnection {
-    String url = "jdbc:postgresql://localhost:5432/postgres";
-    String user = "postgres";
-    String password = "";
+    public static String url = "jdbc:postgresql://localhost:5432/postgres";
+    public static String user = "postgres";
+    public static String password = "postgres";
 
     // Создание соединения
-    public Connection getConnection() {
-        try (
-                Connection connection = DriverManager.getConnection(url, user, password)) {
-            System.out.println("Подключение к базе данных установлено успешно!");
+    public static Connection getConnection() {
+        try {
+            return DriverManager.getConnection( url, user, password );
         } catch (SQLException e) {
-            System.err.println("Ошибка при подключении к базе данных: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Can't connect to database." + e.getMessage());
         }
         return null;
     }

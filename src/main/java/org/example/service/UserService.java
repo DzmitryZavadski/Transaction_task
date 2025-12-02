@@ -8,6 +8,6 @@ public interface UserService {
     User createUser(User user);
     List<User> getAllUsers();
     User getUser(int id);
-//    User updateUser(int id, String email);
+    User updateUser(int id, String email);
     void deleteUser(int id);
 }

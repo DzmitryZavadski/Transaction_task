@@ -1,7 +1,7 @@
 package org.example.model;
 
 public class User {
-    private Integer id;
+    private int id;
     private String name;
     private int age;
     private String email;
@@ -14,7 +14,6 @@ public class User {
         this.age = age;
         this.email = email;
     }
-
 
     public String getName() {
         return name;
@@ -46,5 +45,15 @@ public class User {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", age=" + age +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

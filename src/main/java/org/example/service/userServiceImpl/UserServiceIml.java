@@ -1,5 +1,6 @@
 package org.example.service.userServiceImpl;
 
+import org.example.config.db.PostgresConfigurationConnection;
 import org.example.model.User;
 import org.example.service.UserService;
 
@@ -9,22 +10,12 @@ import java.util.List;
 
 public class UserServiceIml implements UserService {
     private static final String FIND_ALL_STATEMENTS = "SELECT id, name, age, email FROM Users";
-    private static final String FIND_BY_ID_STATEMENT = "SELECT id, name, age, email FROM Users WHERE id = ?";
-    private static final String SAVE_STATEMENT = "INSERT INTO Users(name, age, email) VALUES (?, ?, ?)";
+    private static final String FIND_BY_ID_STATEMENT = "SELECT * FROM Users WHERE id = ?";
+    private static final String SAVE_STATEMENT = "INSERT INTO Users(id, name, age, email) VALUES (?, ?, ?, ?)";
     private static final String DELETE_STATEMENT = "DELETE FROM Users WHERE id = ?";
+    private static final String UPDATE_STATEMENT = "UPDATE Users SET EMAIL = ? WHERE id = ?";
 
-    public static Connection getConnection() {
-        try {
-            return DriverManager.getConnection(
-                    "jdbc:postgresql://localhost:5432/postgres",
-                    "postgres",
-                    "postgres"
-            );
-        } catch (SQLException e) {
-            System.out.println("Can't connect to database." + e.getMessage());
-        }
-        return null;
-    }
+    private PostgresConfigurationConnection getDbConnection = new PostgresConfigurationConnection();
 
     public static void close(Connection connection) {
         try {
@@ -36,16 +27,18 @@ public class UserServiceIml implements UserService {
 
     @Override
     public User createUser(User user) {
-        Connection connection = getConnection();
+        Connection connection = getDbConnection.getConnection();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(SAVE_STATEMENT);
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setInt(2, user.getAge());
-            preparedStatement.setString(3, user.getEmail());
+            preparedStatement.setInt(1, user.getId());
+            preparedStatement.setString(2, user.getName());
+            preparedStatement.setInt(3, user.getAge());
+            preparedStatement.setString(4, user.getEmail());
             int id = preparedStatement.executeUpdate();
             user.setId(id);
         } catch (SQLException e) {
             System.out.println("Exception while saving user" + e.getMessage());
+            close(connection);
         }
         return user;
     }
@@ -53,14 +46,14 @@ public class UserServiceIml implements UserService {
     @Override
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        Connection connection = getConnection();
+        Connection connection = getDbConnection.getConnection();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL_STATEMENTS);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 User user = new User();
                 Integer id = resultSet.getInt("id");
-                String name = resultSet.getString("user_name");
+                String name = resultSet.getString("name");
                 Integer age = resultSet.getInt("age");
                 String email = resultSet.getString("email");
                 user.setId(id);
@@ -70,7 +63,7 @@ public class UserServiceIml implements UserService {
                 users.add(user);
             }
         } catch (SQLException e) {
-            System.out.println("Exception while getting users" + e.getMessage());;
+            System.out.println("Exception while getting users" + e.getMessage());
             close(connection);
         }
         close(connection);
@@ -80,44 +73,64 @@ public class UserServiceIml implements UserService {
     @Override
     public User getUser(int id) {
         User user = null;
-        Connection connection = getConnection();
+        Connection connection = getDbConnection.getConnection();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_STATEMENT);
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 user = new User();
-                String name = resultSet.getString("user_name");
-                Integer age = resultSet.getInt("age");
-                String email = resultSet.getString("email");
                 user.setId(id);
-                user.setName(name);
-                user.setAge(age);
-                user.setEmail(email);
             }
         } catch (SQLException e) {
-            System.out.println("Exception while getting user by id" + e.getMessage());;
+            System.out.println("Exception while getting user by id" + e.getMessage());
             close(connection);
         }
         close(connection);
         return user;
     }
 
-//    @Override
-//    public void updateUser(int id, String email) {
-//        Connection connection = getConnection();
-//
-//    }
+    @Override
+    public User updateUser(int id, String email) {
+        Connection connection = getDbConnection.getConnection();
+        User user = getUser(id);
+        try {
+            PreparedStatement preparedStatement1 = connection.prepareStatement(UPDATE_STATEMENT);
+            preparedStatement1.setString(1, email);
+            preparedStatement1.setInt(2, id);
+            preparedStatement1.executeUpdate();
+
+            ResultSet resultSet = preparedStatement1.executeQuery();
+            user.setId(id);
+            user.setEmail(email);
+            while (resultSet.next()) {
+                resultSet.getInt("id");
+                resultSet.getString("name");
+                resultSet.getInt("age");
+                resultSet.getString("email");
+            }
+            resultSet.close();
+            preparedStatement1.close();
+            close(connection);
+
+        } catch (SQLException e) {
+            System.out.println("Exception while update user" + e.getMessage());
+            close(connection);
+        }
+        close(connection);
+        return user;
+    }
 
     @Override
     public void deleteUser(int id) {
-        Connection connection = getConnection();
+        Connection connection = getDbConnection.getConnection();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(DELETE_STATEMENT);
             preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Exception while saving user" + e.getMessage());
+            close(connection);
         }
     }
 }
