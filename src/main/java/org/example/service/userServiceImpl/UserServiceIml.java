@@ -1,6 +1,6 @@
 package org.example.service.userServiceImpl;
 
-import org.example.config.db.PostgresConfigurationConnection;
+import org.example.config.db.config.PostgresConfigurationConnection;
 import org.example.model.User;
 import org.example.service.UserService;
 
