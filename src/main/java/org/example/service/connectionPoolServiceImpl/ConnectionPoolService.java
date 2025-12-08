@@ -1,6 +1,6 @@
-package org.example.service;
+package org.example.service.connectionPoolServiceImpl;
 
-import org.example.config.db.ConnectionPool;
+import org.example.config.connection.pool.ConnectionPool;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

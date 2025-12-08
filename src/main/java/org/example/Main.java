@@ -1,15 +1,9 @@
 package org.example;
 
 
-import org.example.model.User;
-import org.example.service.UserService;
-import org.example.service.userServiceImpl.UserServiceIml;
-
-import java.util.List;
-
 public class Main {
     static void main() {
-        UserService userService=new UserServiceIml();
+//        UserService userService=new UserServiceIml();
 
         //find all
 //        System.out.println("Select all users");
@@ -23,18 +17,18 @@ public class Main {
 //        System.out.println(userService.getUser(2));
 
         //create
-        System.out.println("*********");
-
-        System.out.println("Save user");
-
-        User user=new User();
-        user.setId(10);
-        user.setName("Artiom");
-        user.setAge(33);
-        user.setEmail("artiom@mail.com");
-        System.out.println("saved user = " + userService.createUser(user));
-
-        System.out.println("*************");
+//        System.out.println("*********");
+//
+//        System.out.println("Save user");
+//
+//        User user=new User();
+//        user.setId(10);
+//        user.setName("Artiom");
+//        user.setAge(33);
+//        user.setEmail("artiom@mail.com");
+//        System.out.println("saved user = " + userService.createUser(user));
+//
+//        System.out.println("*************");
 
         //delete
 //        System.out.println("delete user");
