@@ -1,9 +1,17 @@
 package org.example;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import org.example.config.jsonparsing.Json;
+import org.example.model.User;
+import org.example.service.UserService;
+import org.example.service.userServiceImpl.UserServiceIml;
+
+import java.io.IOException;
+import java.util.List;
 
 public class Main {
     static void main() {
-//        UserService userService=new UserServiceIml();
+        UserService userService=new UserServiceIml();
 
         //find all
 //        System.out.println("Select all users");
@@ -22,10 +30,9 @@ public class Main {
 //        System.out.println("Save user");
 //
 //        User user=new User();
-//        user.setId(10);
-//        user.setName("Artiom");
-//        user.setAge(33);
-//        user.setEmail("artiom@mail.com");
+//        user.setName("Poll");
+//        user.setAge(21);
+//        user.setEmail("pl@mail.com");
 //        System.out.println("saved user = " + userService.createUser(user));
 //
 //        System.out.println("*************");
