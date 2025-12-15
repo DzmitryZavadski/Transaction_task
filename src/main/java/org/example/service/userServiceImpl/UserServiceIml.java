@@ -11,7 +11,7 @@ import java.util.List;
 public class UserServiceIml implements UserService {
     private static final String FIND_ALL_STATEMENTS = "SELECT id, name, age, email FROM Users";
     private static final String FIND_BY_ID_STATEMENT = "SELECT * FROM Users WHERE id = ?";
-    private static final String SAVE_STATEMENT = "INSERT INTO Users(id, name, age, email) VALUES (?, ?, ?, ?)";
+    private static final String SAVE_STATEMENT = "INSERT INTO Users(name, age, email) VALUES (?, ?, ?)";
     private static final String DELETE_STATEMENT = "DELETE FROM Users WHERE id = ?";
     private static final String UPDATE_STATEMENT = "UPDATE Users SET EMAIL = ? WHERE id = ?";
 
@@ -29,13 +29,15 @@ public class UserServiceIml implements UserService {
     public User createUser(User user) {
         Connection connection = getDbConnection.getConnection();
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(SAVE_STATEMENT);
-            preparedStatement.setInt(1, user.getId());
-            preparedStatement.setString(2, user.getName());
-            preparedStatement.setInt(3, user.getAge());
-            preparedStatement.setString(4, user.getEmail());
-            int id = preparedStatement.executeUpdate();
-            user.setId(id);
+            PreparedStatement preparedStatement = connection.prepareStatement(SAVE_STATEMENT, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setInt(2, user.getAge());
+            preparedStatement.setString(3, user.getEmail());
+            preparedStatement.executeUpdate();
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            if (resultSet.next()) {
+                user.setId(resultSet.getInt(1));
+            }
         } catch (SQLException e) {
             System.out.println("Exception while saving user" + e.getMessage());
             close(connection);
@@ -78,10 +80,16 @@ public class UserServiceIml implements UserService {
             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID_STATEMENT);
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
+            if (resultSet.next()) {
                 user = new User();
-                user.setId(id);
+                user.setId(resultSet.getInt("id"));
+                user.setName(resultSet.getString("name"));
+                user.setAge(resultSet.getInt("age"));
+                user.setEmail(resultSet.getString("email"));
             }
+            resultSet.close();
+            preparedStatement.close();
+
         } catch (SQLException e) {
             System.out.println("Exception while getting user by id" + e.getMessage());
             close(connection);
